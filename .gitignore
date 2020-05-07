@@ -1,0 +1,6 @@
+# Project exclude paths
+/node_modules/
+/platforms/
+/plugins/cordova-plugin-webpack/node_modules/
+/plugins/cordova-sqlite-storage/node_modules/
+/www/

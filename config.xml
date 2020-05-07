@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="fr.uga.iut2.info.DemoShifumi" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>DemoShifumi</name>
+    <description>
+        Un jeu de Shifumi en Cordova et JQuery Mobile
+    </description>
+    <author email="philippe.martin@iut2.univ-grenoble-alpes.fr" href="https://www-info.iut2.univ-grenoble-alpes.fr/">
+        Philippe Martin
+    </author>
+    <content src="index.html" />
+    <plugin name="cordova-plugin-whitelist" spec="1" />
+    <access origin="*" />
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+    <allow-intent href="tel:*" />
+    <allow-intent href="sms:*" />
+    <allow-intent href="mailto:*" />
+    <allow-intent href="geo:*" />
+    <platform name="android">
+        <allow-intent href="market:*" />
+        <splash src="res/iut2info-splash.png" />
+        <icon src="res/iut2info-icone.png" />
+    </platform>
+    <platform name="ios">
+        <allow-intent href="itms:*" />
+        <allow-intent href="itms-apps:*" />
+    </platform>
+    <preference name="SplashMaintainAspectRatio" value="false" />
+    <preference name="SplashShowOnlyFirstTime" value="false" />
+    <engine name="browser" spec="^6.0.0" />
+    <engine name="android" spec="^8.0.0" />
+</widget>
