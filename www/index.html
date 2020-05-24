@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<html>
+<head>
+    <!--
+    Customize this policy to fit your own app's needs. For more guidance, see:
+        https://github.com/apache/cordova-plugin-whitelist/blob/master/README.md#content-security-policy
+    Some notes:
+        * gap: is required only on iOS (when using UIWebView) and is needed for JS->native communication
+        * https://ssl.gstatic.com is required only on Android and is needed for TalkBack to function properly
+        * Disables use of inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
+            * Enable inline JS: add 'unsafe-inline' to default-src
+    -->
+    <meta content="default-src *; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'"
+          http-equiv="Content-Security-Policy">
+    <meta content="telephone=no" name="format-detection">
+    <meta content="no" name="msapplication-tap-highlight">
+    <meta content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width"
+          name="viewport">
+    <title>Morpion</title>
+    <!-- On rajoute le CSS de JQuery Mobile -->
+    <link href="css/vendor/jquery.mobile-1.4.5.min.css" rel="stylesheet" type="text/css">
+    <!-- Et le CSS de notre application -->
+    <link href="css/index.css" rel="stylesheet" type="text/css">
+    <!-- Code JS pour l'environnement (cordova et JQuery Mobile) -->
+    <script src="cordova.js"></script>
+    <script src="js/vendor/jquery-2.1.4.min.js"></script>
+    <script src="js/vendor/jquery.mobile-1.4.5.min.js"></script>
+    <!-- Code JS d'initialisation de l'application cordova -->
+    <script src="index.bundle.js"></script>
+</head>
+<body>
+<!-- Fichier HTML = PARTIE "VUE" de l'application                                -->
+<!--   composée d'une suite de 4 pages Jquery Mobile                             -->
+<!-- Le comportement de chaque page est géré par le controleur (événements JS)   -->
+<!--======== PAGE "vueChargement" - pour attendre que le périphérique soit prêt  ========-->
+<div data-role="page" id="vueChargement">
+    <header id="morpionHeader">
+        <div data-id="monHeader" data-position="fixed" data-role="header" data-theme="b">
+            <h1>Shifumi</h1>
+        </div>
+    </header>
+    <div class="ui-content" data-role="main">
+        <p>Chargement du jeu...</p>
+    </div>
+    <footer id="morpionFooter">
+        <div data-id="monFooter" data-position="fixed" data-role="footer" data-theme="b">
+            <h3>Un jeu MVC en Cordova+Jquery Mobile</h3>
+        </div>
+    </footer>
+</div>
+
+<!--======== PAGE "vueAccueil" - saisie nom joueur  ========-->
+<div data-role="page" id="vueAccueil">
+    <div class="ui-content" data-role="main">
+        <p>Rappel des règles : alignez 3 de vos images horizontalement, verticalement ou en diagonale pour remporter la partie
+        (le joueur qui commence est choisi aléatoirement)</p>
+
+        <label for="nomJoueur1">Joueur 1</label>
+        <input id="nomJoueur1" placeholder="Entrer le nom du (de la) joueur(euse)s 1" type="text"/>
+        <input class="imageJoueur" id="photoJoueur1" type="image" src="images/Photo_icon.png">
+        <input id="fileJoueur1" type="file" accept="image/*" value="">
+
+        <hr>
+
+        <label for="nomJoueur2">Joueur 2</label>
+        <input id="nomJoueur2" placeholder="Entrer le nom du (de la) joueur(euse)s 2" type="text">
+        <input class="imageJoueur" id="photoJoueur2" type="image" src="images/Photo_icon.png">
+        <input id="fileJoueur2" type="file" accept="image/*" value="">
+
+        <button id="btnNouvellePartie">Jouer</button>
+        <button id="btnClearStorage">Supprimer les sauvegardes</button>
+
+        <!--    Images gracieusement fournies par lady Audrey    -->
+        <div id="defaultImages" class="topbar">
+            <div class="topbar-content">
+                <img class="imageJoueur" src="images/the_mighty_sir_martin.png" alt="Je sais où tu t'caches !">
+            </div>
+            <div class="topbar-content">
+                <img class="imageJoueur" src="images/blanchon.png" alt="Ça vaut pas zéro, ça vaut moins deux !">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--======== PAGE "vueJeu" - déroulement d'une partie ========-->
+<div data-role="page" id="vueJeu">
+    <div class="ui-content" data-role="main">
+        <div class="topbar">
+
+            <div class="topbar-content">
+                <p data-role="nomJoueur1"></p>
+                <img class="imageJoueur" data-role="photoJoueur1" src="" alt="Joueur 1">
+            </div>
+
+            <div class="topbar-content">
+                <p data-role="nomJoueur2" class="topbar-right"></p>
+                <img class="imageJoueur topbar-right" data-role="photoJoueur2" src="" alt="Joueur 2">
+            </div>
+
+        </div>
+
+        <div id="currentPlayerMessage">Test</div>
+
+<!--   GRILLE DE JEU    -->
+        <div class="ui-grid-b" id="gameGrid">
+
+        </div>
+
+    </div>
+</div>
+
+<!--======== PAGE "vueScore" - affiche le score ========-->
+<div data-role="page" id="vueFin">
+    <div class="ui-content" data-role="main">
+        <h1>Joueur : <span data-role="nomJoueur" style="color:blue"></span></h1>
+        <p style="color:green">Victoires : <span id="nbVictoires"></span></p>
+        <p style="color:orange">Nuls : <span id="nbNuls"></span></p>
+        <p style="color:red">Défaites : <span id="nbDefaites"></span></p>
+        <button id="btnRetourJeu">Continuer</button>
+        <button  id="btnRetourAccueil">Nouvelle Partie</button>
+    </div>
+</div>
+</body>
+</html>
