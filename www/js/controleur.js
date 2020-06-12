@@ -42,7 +42,7 @@ export class VueAccueilController {
         $('#fileJoueur2').val("");
 
         partie = new modele.Partie();
-        Object.setPrototypeOf(partie, modele.Partie.prototype);
+        //Object.setPrototypeOf(partie, modele.Partie.prototype);
     }
 
     static setEvents() {
@@ -71,8 +71,9 @@ export class VueAccueilController {
 
         if (joueur1 === "" || joueur2 === "") {
             alert("Entrez un nom de joueur svp");
+        }else if(joueur1 === joueur2) {
+            alert("Veuillez entrer des noms différents");
         } else {
-
             this.initJoueurs([joueur1, joueur2]);
             // Et on passe à une autre vue
             $.mobile.changePage("#vueJeu");
@@ -107,6 +108,7 @@ export class VueAccueilController {
 export class VueJeuController {
 
     static init() {
+        partie.nouvelleGrille();
 
         $('p[data-role="nomJoueur1"]').html(partie.getJoueur(1).nom);  //Mise à jour des noms
         $('p[data-role="nomJoueur2"]').html(partie.getJoueur(2).nom);
@@ -114,17 +116,14 @@ export class VueJeuController {
         $('img[data-role="photoJoueur2"]').attr("src", partie.getJoueur(2).photo.base64);
 
         console.log(partie);
-        let message = "Au tour de <b>" + partie.getJoueur(partie.joueurCourant).nom + "</b>";
+        let message = "Au tour de <b>" + partie.joueurCourant.nom + "</b>";
         $('#currentPlayerMessage').html(message);
         this.genererGrille();
-        debugger;
-        // ET LA YA TOUT QUI BUG POURQUOIIIIIIIIII ????????
     }
 
     static setEvents() {
         $(document).on("pagebeforeshow", "#vueJeu", function () {this.init();}.bind(this));
     }
-
 
     static nouevllePartie() {
         this.init();
@@ -152,8 +151,9 @@ export class VueJeuController {
 
             outerDiv.attr("id", "caseGrille"+i.toString());
             outerDiv.on("click", function () {
-                VueJeuController.coup(i);
-            })
+                this.coup(i);
+            }.bind(this));
+
             outerDiv.html(img);
 
             $('#gameGrid').append(outerDiv);
@@ -170,22 +170,39 @@ export class VueJeuController {
         });
 
         //Place l'image du joueur dans la case
-        let imgJoueurCourant = partie.getJoueur(partie.joueurCourant).photo;
+        let imgJoueurCourant = partie.joueurCourant.photo;
         $(idCase).children('img').attr("src", imgJoueurCourant.base64);
 
         //Mise à jour de la variable grille
         let ligne = Math.trunc(numCase/3);
         let colonne = numCase % 3;
-        partie.grille[ligne][colonne];
+        partie.grille[ligne][colonne] = partie.numeroJoueurCourant;   //TODO changer après modif joueur courant
 
-        if(partie.verifierVictoire()){
-
-        }else{  //Ne pas changer de joueur en cas de victoire pour conserver le vainqueur
+        partie.etat = partie.verifierVictoire(partie.grille);
+        if(partie.etat === partie.NONTERMINE){
             partie.switchJoueurCourant();
 
             //Mise à jour du message
-            $('#currentPlayerMessage').children('b').html(partie.getJoueur(partie.joueurCourant).nom);
+            $('#currentPlayerMessage').children('b').html(partie.joueurCourant.nom);
+        }else{  //Ne pas changer de joueur en cas de victoire pour conserver le vainqueur
+            this.finPartie();
         }
+
+    }
+
+    static finPartie() {
+        debugger;
+        if(partie.etat === partie.VICTOIRE){
+            partie.joueurCourant.victoires += 1;
+            modele.ScoreDAO.saveJoueur(partie.joueurCourant);
+        } else {
+            partie.joueurs.forEach(function (joueur){
+                joueur.egalites += 1;
+                modele.ScoreDAO.saveJoueur(joueur);
+            });
+        }
+
+        $.mobile.changePage("#vueFin");
     }
 
 }
@@ -193,23 +210,49 @@ export class VueJeuController {
 ////////////////////////////////////////////////////////////////////////////////
 export class VueFinController {
     static init() {
-        $("#nbVictoires").html(session.partieEnCours.nbVictoires);
-        $("#nbNuls").html(session.partieEnCours.nbNuls);
-        $("#nbDefaites").html(session.partieEnCours.nbDefaites);
+        $("#messageFin").html("");
+        $("#imgWinner").attr("src", "");
+        $("#scoreJ1").html("");
+        $("#scoreJ2").html("");
+
+        if(partie.etat === partie.VICTOIRE){
+            this.creerPageVictoire();
+        } else {
+            this.creerPageEgalite();
+        }
+
+        this.creerScores();
     }
 
     static setEvents() {
         $(document).on("pagebeforeshow", "#vueFin", function () {this.init();}.bind(this));
-        $("#btnRetourJeu").on("click", function(){this.retourJeu();}.bind(this));
-        $("#btnRetourAccueil").on("click", function(){this.retourAccueil();}.bind(this));
+
+        $("#btnRetourJeu").on("click", function(){$.mobile.changePage("#vueJeu")}.bind(this));
+        $("#btnRetourAccueil").on("click", function(){$.mobile.changePage("#vueAccueil")}.bind(this));
     }
 
-    static retourJeu() {
-        $.mobile.changePage("#vueJeu");
+    static creerPageVictoire() {
+        $("#messageFin").html("FÉLICITATIONS " + partie.joueurCourant.nom.toString().toUpperCase() + " !").attr("class", "victoire center messageFin");
+        $("#imgWinner").attr("src", partie.joueurCourant.photo.getBase64);
     }
 
-    static retourAccueil() {
-        $.mobile.changePage("#vueAccueil");
+    static creerPageEgalite() {
+        $("#messageFin").html("ÉGALITÉ").attr("class", "egalite center messageFin");
+    }
+
+    static creerScores() {
+        for (let i = 1; i <=2 ; i++) {
+            let joueur = partie.getJoueur(i);
+
+            let imgJoueur = $('<img>').attr("src", joueur.photo.base64).attr("class", "imageJoueur imageJoueur-fin");
+            let victoires = $('<p></p>').attr("class", "victoire scoreText").html("Victoires : " + joueur.victoires);
+            let egalites = $('<p></p>').attr("class", "egalite scoreText").html("Egalites : " + joueur.egalites);
+            let defaites = $('<p></p>').attr("class", "defaite scoreText").html("Defaites : " + joueur.defaites);
+
+            let score = "#scoreJ"+i.toString();
+
+            $(score).append([imgJoueur, victoires, egalites, defaites]);
+        }
     }
 }
 

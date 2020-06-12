@@ -41,3 +41,40 @@ hr {
     margin-top: 2rem;
     margin-bottom: 2rem;
 }
+
+.center {
+    display: flex;
+    justify-content: center;
+}
+
+.spaceBetween {
+    display: flex;
+    justify-content: space-between;
+}
+
+.victoire{
+    color: green;
+}
+
+.defaite {
+    color: crimson;
+}
+
+.egalite {
+    color: #ba9d37;
+}
+
+.messageFin{
+    font-weight: bold;
+    font-size: xx-large;
+}
+
+.scoreText {
+    font-size: large;
+}
+
+.imageJoueur-fin {
+    display: block;
+    max-height: 10rem;
+    max-width: 10rem;
+}

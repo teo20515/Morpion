@@ -130,12 +130,28 @@
 <!--======== PAGE "vueScore" - affiche le score ========-->
 <div data-role="page" id="vueFin">
     <div class="ui-content" data-role="main">
-        <h1>Joueur : <span data-role="nomJoueur" style="color:blue"></span></h1>
-        <p style="color:green">Victoires : <span id="nbVictoires"></span></p>
-        <p style="color:orange">Nuls : <span id="nbNuls"></span></p>
-        <p style="color:red">Défaites : <span id="nbDefaites"></span></p>
-        <button id="btnRetourJeu">Continuer</button>
-        <button  id="btnRetourAccueil">Nouvelle Partie</button>
+        
+        <div>
+            <p id="messageFin" class=""></p>
+            <img src="" id="imgWinner" class="imageJoueur-fin">
+        </div>
+
+        <div class="spaceBetween">
+
+            <div id="scoreJ1" class="">
+
+            </div>
+
+            <div id="scoreJ2" class="">
+
+            </div>
+
+        </div>
+        
+        <button id="btnRetourJeu">Rejouer</button>
+        <button  id="btnRetourAccueil">Retour à l'accueil</button>
+
+
     </div>
 </div>
 </body>
